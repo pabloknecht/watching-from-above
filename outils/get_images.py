@@ -198,3 +198,32 @@ def address_to_coord(address):
     lat = float(response[0]['lat'])
     longi = float(response[0]['lon'])
     return lat, longi
+
+def maps_main():
+    # Grenoble
+    address = '29 avenue de la monta, saint egreve'
+
+    # # Singapore
+    # address = '101 Thomson Rd, Singapore 307591'
+
+    lat, longi = address_to_coord(address)
+    zoom = calculate_zoom(lat)
+    size = 3
+    coords = latlong_to_xy(lat, longi, zoom)
+    dl_square(coords[0], coords[1], zoom, size)
+    stitch_tiles(coords[0], coords[1], size, zoom)
+    delete_tiles()
+    meters_per_pixel = calc_meters_per_pixel(lat, zoom)
+    img = Image.open('stitched.jpg')
+    # os.remove('stitched.jpg')
+    #plt.imshow(img);
+    img = image_resize(meters_per_pixel, img)
+    plt.imshow(img);
+    #img.size
+    img = image_crop(img)
+    plt.imshow(img);
+    #img.size
+    quadrants = int(img.height/64)
+    categories = np.zeros((quadrants, quadrants), dtype=int)
+    plot_image_categories(img, categories)
+    plot_sub_images_categories(img, categories)
