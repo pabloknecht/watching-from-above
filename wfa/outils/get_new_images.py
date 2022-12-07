@@ -181,7 +181,7 @@ def plot_sub_images_categories(img, categories):
     for i in range(quads):
         for j in range(quads):
             img_quad = img.crop((i*64, j*64, i*64+64, j*64+64))
-            new_filename = os.path.join(new_folder, f'image_{i}_{j}.jpg')
+            new_filename = os.path.join(new_folder, f'image_{str(i).zfill(3)}_{str(j).zfill(3)}.jpg')
             img_quad.save(new_filename)
             axs[j, i].imshow(img_quad)
             axs[j, i].text(22, 40, categories[i, j], color = 'red')
