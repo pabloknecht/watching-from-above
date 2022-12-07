@@ -4,6 +4,9 @@ from PIL import Image
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+from owslib.wms import WebMapService
+from io import BytesIO
+
 
 def download_tile(x, y, z):
     '''
@@ -227,3 +230,75 @@ def maps_main():
     categories = np.zeros((quadrants, quadrants), dtype=int)
     plot_image_categories(img, categories)
     plot_sub_images_categories(img, categories)
+
+
+def get_s2maps_data(size_km:float, lat:float, lon:float, year:str) -> np.ndarray:
+    """
+    Given the image side size in km and a GPS coordinate, retuns an RGB image centered
+    in the given point with resolution of 10m/pixel
+
+    Arguments:
+        size_km: size of the image side in km (float)
+        lat: latitude of the central point (float)
+        lon: longitude of the central point (float)
+        year: year of historical data, 4 options among [2017,2018,2019,2020]
+
+    Returns:
+        An RGB image stured in a numpy.array
+
+    """
+    url = 'https://tiles.maps.eox.at/wms?service=wms&request=getcapabilities'
+    wms = WebMapService(url)
+
+    bbox = get_bounding_box(lat, lon, size_km/2)
+
+    # Get new image
+    pixels = int(size_km * 100)
+
+    response = wms.getmap(
+        layers=[f"s2cloudless-{year}"],
+        size=[pixels, pixels],
+        srs="EPSG:4326",
+        #Bounding box for map extent. Value is minx,miny,maxx,maxy in units of the SRS. Left, bottom, right, top
+        bbox=[bbox.lon_min, bbox.lat_min, bbox.lon_max, bbox.lat_max],
+        format="image/jpeg")
+
+    bytes_io = BytesIO(response.read())
+    PIL_image = Image.open(bytes_io)
+    image_np = np.array(PIL_image)
+    return image_np
+
+
+class BoundingBox(object):
+    def __init__(self, *args, **kwargs):
+        self.lat_min = None
+        self.lon_min = None
+        self.lat_max = None
+        self.lon_max = None
+
+
+def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_km):
+    assert half_side_in_km > 0
+    assert latitude_in_degrees >= -90.0 and latitude_in_degrees  <= 90.0
+    assert longitude_in_degrees >= -180.0 and longitude_in_degrees <= 180.0
+
+    lat = math.radians(latitude_in_degrees)
+    lon = math.radians(longitude_in_degrees)
+
+    radius  = 6371
+    # Radius of the parallel at given latitude
+    parallel_radius = radius*math.cos(lat)
+
+    lat_min = lat - half_side_in_km/radius
+    lat_max = lat + half_side_in_km/radius
+    lon_min = lon - half_side_in_km/parallel_radius
+    lon_max = lon + half_side_in_km/parallel_radius
+    rad2deg = math.degrees
+
+    box = BoundingBox()
+    box.lat_min = rad2deg(lat_min)
+    box.lon_min = rad2deg(lon_min)
+    box.lat_max = rad2deg(lat_max)
+    box.lon_max = rad2deg(lon_max)
+
+    return (box)

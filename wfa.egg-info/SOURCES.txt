@@ -1,0 +1,13 @@
+README.md
+setup.py
+wfa/__init__.py
+wfa.egg-info/PKG-INFO
+wfa.egg-info/SOURCES.txt
+wfa.egg-info/dependency_links.txt
+wfa.egg-info/not-zip-safe
+wfa.egg-info/requires.txt
+wfa.egg-info/top_level.txt
+wfa/api/__init__.py
+wfa/ml_logic/__init__.py
+wfa/outils/__init__.py
+wfa/outils/get_new_images.py
