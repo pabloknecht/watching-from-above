@@ -153,13 +153,24 @@ def predict_new_images(loaded_model, X_new):
 
 def get_new_images(new_images_path):
     imgs = []
-    images_path = os.listdir(new_images_path)
+    images_path = sorted(os.listdir(new_images_path))
     for img in tqdm(images_path):
         path = os.path.join(new_images_path, img)
         if os.path.exists(path):
             image = Image.open(path)
             imgs.append(np.array(image))
     return np.array(imgs)
+
+def plot_classified_images(X_new, y_pred_class):
+    size = int(X_new.shape[0] ** 0.5)
+    X_reshaped = X_new.reshape((size,size,64,64,3))
+    fig, axs = plt.subplots(size, size, figsize = (10, 10))
+    for i in range(size) :
+        for j in range(size) :
+            axs[j, i].imshow(X_reshaped[i,j])
+            axs[j, i].text(22, 40, y_pred_class[i, j], color = 'red')
+            axs[j, i].axis('off')
+    plt.show()
 
 
 def main() :
@@ -181,4 +192,4 @@ def main() :
     new_images_path =  './new_tiles'
     X_new = get_new_images(new_images_path)
     y_pred_class = predict_new_images(loaded_model, X_new)
-    y_pred_class
+    plot_classified_images(X_new, y_pred_class)
