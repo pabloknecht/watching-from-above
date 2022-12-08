@@ -139,3 +139,5 @@ websocket-client==1.4.2
 Werkzeug==2.2.2
 -e git+ssh://git@github.com/pabloknecht/watching-from-above.git@da070b97b0959e616e0c6a99f50c52cfe25a8569#egg=wfa
 wrapt==1.14.1
+fastapi
+uvicorn
