@@ -2,6 +2,7 @@ import mlflow
 from mlflow.tracking import MlflowClient
 
 import glob
+from dotenv import load_dotenv
 import os
 import time
 import pickle
@@ -10,11 +11,12 @@ from colorama import Fore, Style
 
 from tensorflow.keras import Model, models
 
+load_dotenv()
 LOCAL_REGISTRY_PATH = os.environ["LOCAL_REGISTRY_PATH"]
 
 def save_model(model: Model = None,
-               params: dict = None,
-               metrics: dict = None) -> None:
+               params: dict = {},
+               metrics: dict = {}) -> None:
     """
     persist trained model, params and metrics
     """
@@ -23,6 +25,7 @@ def save_model(model: Model = None,
 
     print(os.environ.get("MODEL_TARGET"))
     print('#'*1000)
+    print(params)
     if os.environ.get("MODEL_TARGET") == "mlflow":
 
         # retrieve mlflow env params
