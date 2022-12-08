@@ -151,45 +151,45 @@ def predict_new_images(loaded_model, X_new):
     y_pred_class = np.argmax(y_new, axis = 1)
     return y_pred_class.reshape((size, size))
 
-def get_new_images(new_images_path):
-    imgs = []
-    images_path = sorted(os.listdir(new_images_path))
-    for img in tqdm(images_path):
-        path = os.path.join(new_images_path, img)
-        if os.path.exists(path):
-            image = Image.open(path)
-            imgs.append(np.array(image))
-    return np.array(imgs)
+# def get_new_images(new_images_path):
+#     imgs = []
+#     images_path = sorted(os.listdir(new_images_path))
+#     for img in tqdm(images_path):
+#         path = os.path.join(new_images_path, img)
+#         if os.path.exists(path):
+#             image = Image.open(path)
+#             imgs.append(np.array(image))
+#     return np.array(imgs)
 
-def plot_classified_images(X_new, y_pred_class):
-    size = int(X_new.shape[0] ** 0.5)
-    X_reshaped = X_new.reshape((size,size,64,64,3))
-    fig, axs = plt.subplots(size, size, figsize = (10, 10))
-    for i in range(size) :
-        for j in range(size) :
-            axs[j, i].imshow(X_reshaped[i,j])
-            axs[j, i].text(22, 40, y_pred_class[i, j], color = 'red')
-            axs[j, i].axis('off')
-    plt.show()
-
-
-def main() :
-    data_path = '../raw_data/EuroSAT'
-    X, y = load_data(data_path)
-    X, y = shuffle_data(X,y, 0)
-    X_train, X_val, X_test, y_train, y_val, y_test = data_split(X,y,0.1,0.1)
-    model_basic = create_basic_model()
-    history = fit_model(model_basic, X_train, y_train,X_val, y_val,epochs=2)
-    plot_loss_accuracy(history)
-    evaluation = model_basic.evaluate(X_test, y_test)
-    test_accuracy = evaluation[-1]
-    print(f"test_accuracy = {round(test_accuracy,2)*100} %")
-    model_path = '../models/my_model'
-    models.save_model(model_basic, model_path)
+# def plot_classified_images(X_new, y_pred_class):
+#     size = int(X_new.shape[0] ** 0.5)
+#     X_reshaped = X_new.reshape((size,size,64,64,3))
+#     fig, axs = plt.subplots(size, size, figsize = (10, 10))
+#     for i in range(size) :
+#         for j in range(size) :
+#             axs[j, i].imshow(X_reshaped[i,j])
+#             axs[j, i].text(22, 40, y_pred_class[i, j], color = 'red')
+#             axs[j, i].axis('off')
+#     plt.show()
 
 
-    loaded_model = load_model(model_path)
-    new_images_path =  './new_tiles'
-    X_new = get_new_images(new_images_path)
-    y_pred_class = predict_new_images(loaded_model, X_new)
-    plot_classified_images(X_new, y_pred_class)
+# def main() :
+#     data_path = '../raw_data/EuroSAT'
+#     X, y = load_data(data_path)
+#     X, y = shuffle_data(X,y, 0)
+#     X_train, X_val, X_test, y_train, y_val, y_test = data_split(X,y,0.1,0.1)
+#     model_basic = create_basic_model()
+#     history = fit_model(model_basic, X_train, y_train,X_val, y_val,epochs=2)
+#     plot_loss_accuracy(history)
+#     evaluation = model_basic.evaluate(X_test, y_test)
+#     test_accuracy = evaluation[-1]
+#     print(f"test_accuracy = {round(test_accuracy,2)*100} %")
+#     model_path = '../models/my_model'
+#     models.save_model(model_basic, model_path)
+
+
+#     loaded_model = load_model(model_path)
+#     new_images_path =  './new_tiles'
+#     X_new = get_new_images(new_images_path)
+#     y_pred_class = predict_new_images(loaded_model, X_new)
+#     plot_classified_images(X_new, y_pred_class)

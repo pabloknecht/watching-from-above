@@ -14,6 +14,7 @@ cachetools==5.2.0
 certifi==2022.9.24
 cffi==1.15.1
 charset-normalizer==2.1.1
+click==8.1.3
 contourpy==1.0.6
 cycler==0.11.0
 debugpy==1.6.4
@@ -27,11 +28,14 @@ fastjsonschema==2.16.2
 flatbuffers==22.12.6
 fonttools==4.38.0
 gast==0.4.0
+geojson==2.5.0
+geomet==1.0.0
 google-auth==2.15.0
 google-auth-oauthlib==0.4.6
 google-pasta==0.2.0
 grpcio==1.51.1
 h5py==3.7.0
+html2text==2020.1.16
 idna==3.4
 iniconfig==1.1.1
 ipdb==0.13.9
@@ -106,6 +110,7 @@ scikit-learn==1.1.3
 scipy==1.9.3
 seaborn==0.12.1
 Send2Trash==1.8.0
+sentinelsat==1.1.1
 six==1.16.0
 sniffio==1.3.0
 soupsieve==2.3.2.post1
@@ -132,4 +137,5 @@ wcwidth==0.2.5
 webencodings==0.5.1
 websocket-client==1.4.2
 Werkzeug==2.2.2
+-e git+ssh://git@github.com/pabloknecht/watching-from-above.git@da070b97b0959e616e0c6a99f50c52cfe25a8569#egg=wfa
 wrapt==1.14.1
