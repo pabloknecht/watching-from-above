@@ -9,5 +9,7 @@ wfa.egg-info/requires.txt
 wfa.egg-info/top_level.txt
 wfa/api/__init__.py
 wfa/ml_logic/__init__.py
+wfa/ml_logic/model.py
 wfa/outils/__init__.py
 wfa/outils/get_new_images.py
+wfa/outils/image_viz.py
