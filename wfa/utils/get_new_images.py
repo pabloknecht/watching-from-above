@@ -237,7 +237,7 @@ def address_to_coord(address):
     '''
     Returns the latitude and longitude for a given address
     '''
-    latlon = re.search(r'\-?\d+\.\d+\s*,\s*\-?\d+\.\d+', address)
+    latlon = re.search(r'\-?\d+\.?\d*\s*,\s*\-?\d+\.?\d*', address)
     if latlon != None:
         text = latlon.string
         text = text.split(',')
