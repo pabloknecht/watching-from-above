@@ -1,4 +1,4 @@
-#FROM python:3.10-buster
+#FROM python:3.10-slim
 FROM tensorflow/tensorflow:2.10.0
 
 
