@@ -1,5 +1,3 @@
-from taxifare.ml_logic.params import LOCAL_REGISTRY_PATH
-
 import mlflow
 from mlflow.tracking import MlflowClient
 
@@ -12,6 +10,7 @@ from colorama import Fore, Style
 
 from tensorflow.keras import Model, models
 
+LOCAL_REGISTRY_PATH = os.environ["LOCAL_REGISTRY_PATH"]
 
 def save_model(model: Model = None,
                params: dict = None,
@@ -19,9 +18,11 @@ def save_model(model: Model = None,
     """
     persist trained model, params and metrics
     """
-
+    LOCAL_REGISTRY_PATH = os.environ["LOCAL_REGISTRY_PATH"]
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
+    print(os.environ.get("MODEL_TARGET"))
+    print('#'*1000)
     if os.environ.get("MODEL_TARGET") == "mlflow":
 
         # retrieve mlflow env params
@@ -73,6 +74,7 @@ def save_model(model: Model = None,
 
     # save model
     if model is not None:
+        #print(LOCAL_REGISTRY_PATH)
         model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
         print(f"- model path: {model_path}")
         model.save(model_path)
