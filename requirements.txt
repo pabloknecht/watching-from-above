@@ -138,7 +138,4 @@ wcwidth==0.2.5
 webencodings==0.5.1
 websocket-client==1.4.2
 Werkzeug==2.2.2
-# Editable Git install (wfa==0.0.1) with either a deleted local remote or invalid URI:
-# 'git@github.com:/pabloknecht/watching-from-above.git'
--e /home/luis.robertosantannahenriques/code/pabloknecht/watching-from-above
 wrapt==1.14.1
