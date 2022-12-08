@@ -2,6 +2,6 @@ raw_data/
 .env
 .envrc
 new_tiles/
-__pycache__
+__pycache__/
 *.egg-info
 *.ipynb_checkpoints
