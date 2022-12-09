@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from wfa.ml_logic.registry import load_model
 from wfa.ml_logic import model
 from wfa.utils.get_new_images import get_new_image, split_tiles
-import pandas as pd
 #from colorama import Fore, Style
 import numpy as np
 
@@ -23,23 +22,22 @@ app.state.model=load_model()
 
 @app.get('/watchingfromabove/prediction')
 def predict(address:str='Paris',
-            year_of_interest:str='2020',
-            historical_year:str='2019'):
+            year_1:str='2020',
+            year_2:str='2019'):
     """
     With the address provided by user, we are able to return the satellite
     image of current year, as well as the satellit image of historical year
-    (option among 2017,2018,2019,2020)
-    We will also return the evolution in % of changes
+    (option among 2017,2018,2019,2020,Google)
     """
 
-    year_of_interest_image = get_new_image(address,year_of_interest)
-    historical_year_image = get_new_image(address,historical_year)
+    year_1_image = get_new_image(address,year_1)
+    year_2_image = get_new_image(address,year_2)
 
-    X_current = split_tiles(year_of_interest_image)
-    X_history = split_tiles(historical_year_image)
+    X_image_1 = split_tiles(year_1_image)
+    X_image_2 = split_tiles(year_2_image)
 
-    cat_pred1 = model.predict_new_images(app.state.model, X_current);
-    cat_pred2 = model.predict_new_images(app.state.model, X_history);
+    cat_pred1 = model.predict_new_images(app.state.model, X_image_1);
+    cat_pred2 = model.predict_new_images(app.state.model, X_image_2);
     cat_pred1 = np.ndarray.tolist(cat_pred1)
     cat_pred2 = np.ndarray.tolist(cat_pred2)
 
