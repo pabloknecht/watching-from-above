@@ -16,6 +16,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+
 app.state.model=load_model()
 
 # http://127.0.0.1:8000/watchingfromabove/prediction?address=35%av%Joseph%Monier&year_of_interest=2020&historical_year=2018
@@ -44,6 +45,10 @@ def predict(address:str='Paris',
     #print(Fore.BLUE + f"\nLoad model {cat_pred2} stage from mlflow..." + Style.RESET_ALL)
     return {'current_year':cat_pred1, 'historical_year':cat_pred2}
 
+@app.get("/reloadmodel")
+def root():
+    app.state.model=load_model()
+    return dict(greeting="Model reloaded")
 
 @app.get("/")
 def root():

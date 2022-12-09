@@ -1,6 +1,7 @@
 raw_data/
 .env
 .envrc
+.env.yaml
 new_tiles/
 __pycache__/
 __pycache__
