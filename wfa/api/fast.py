@@ -31,11 +31,7 @@ def predict(address:str='Paris',
     (option among 2017,2018,2019,2020)
     We will also return the evolution in % of changes
     """
-    user_input  = pd.DataFrame(dict(
-        address=[address],
-        year_of_interest=[year_of_interest],
-        historical_year=[historical_year]
-    ))
+
     year_of_interest_image = get_new_image(address,year_of_interest)
     historical_year_image = get_new_image(address,historical_year)
 
