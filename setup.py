@@ -6,8 +6,8 @@ with open("requirements.txt") as f:
 requirements = [x.strip() for x in content if "git+" not in x]
 
 setup(name='wfa',
-      version="0.0.2",
-      description="Watching-from-above Model",
+      version="0.0.3",
+      description="Watching-from-above with api",
       license="SE",
       author="SE",
       author_email="pabloknecht@gmail.com",
