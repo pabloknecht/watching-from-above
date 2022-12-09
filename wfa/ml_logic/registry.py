@@ -23,34 +23,26 @@ def save_model(model: Model = None,
     LOCAL_REGISTRY_PATH = os.environ["LOCAL_REGISTRY_PATH"]
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
-    print(os.environ.get("MODEL_TARGET"))
-    print('#'*1000)
-    print(params)
     if os.environ.get("MODEL_TARGET") == "mlflow":
 
         # retrieve mlflow env params
-        pass  # YOUR CODE HERE
         mlflow_tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
         mlflow_experiment  = os.environ.get("MLFLOW_EXPERIMENT")
         mlflow_model_name  = os.environ.get("MLFLOW_MODEL_NAME")
 
         # configure mlflow
-        pass  # YOUR CODE HERE
         mlflow.set_tracking_uri(mlflow_tracking_uri)
         mlflow.set_experiment(mlflow_experiment)
 
         with mlflow.start_run():
 
             # STEP 1: push parameters to mlflow
-            pass  # YOUR CODE HERE
             mlflow.log_params(params)
 
             # STEP 2: push metrics to mlflow
-            pass  # YOUR CODE HERE
             mlflow.log_metrics(metrics)
 
             # STEP 3: push model to mlflow
-            pass  # YOUR CODE HERE
             if model is not None:
                mlflow.keras.log_model(keras_model=model,
                                    artifact_path="model",
@@ -98,7 +90,7 @@ def load_model(save_copy_locally=False) -> Model:
 
         # load model from mlflow
         model = None
-        pass  # YOUR CODE HERE
+        # YOUR CODE HERE
         mlflow_tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
         #mlflow_experiment  = os.environ.get("MLFLOW_EXPERIMENT")
         mlflow_model_name  = os.environ.get("MLFLOW_MODEL_NAME")
