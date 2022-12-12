@@ -58,14 +58,14 @@ def dl_square(x, y, z, size=3):
 
     return imgs
 
-def stitch_tiles(imgs, x, y, size=3):
+def stitch_tiles(imgs, x, y, size=3, img_size=256):
     '''
     Stitches tiles into one large image
     '''
 
     # Stitched image size
-    width = size * 256
-    height = size * 256
+    width = size * img_size
+    height = size * img_size
 
     max_x = x + size - 1
     max_y = y + size - 1
@@ -77,8 +77,8 @@ def stitch_tiles(imgs, x, y, size=3):
     while x2 <= max_x:
         while y2 <= max_y:
             img = imgs[f"{x2}_{y2}"]
-            position_x = (x2 - x) * 256
-            position_y = (y2 - y) * 256
+            position_x = (x2 - x) * img_size
+            position_y = (y2 - y) * img_size
             output.paste(img, (position_x, position_y))
             y2 += 1
 
@@ -281,9 +281,8 @@ def split_tiles(img : Image) -> np.array:
     tiles = []
     quads = int(img.height/64)
 
-    for i in range(quads):
-        for j in range(quads):
+    for j in range(quads):
+        for i in range(quads):
             temp_tile = np.array(img.crop((i*64, j*64, i*64+64, j*64+64)))
             tiles.append(temp_tile)
-
     return np.array(tiles)
