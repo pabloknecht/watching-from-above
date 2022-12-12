@@ -94,7 +94,7 @@ def landscape_changes(image, changes):
 
     for x in range(max_x):
         for y in range(max_x):
-            if changes[x,y] == 0:
+            if changes[y,x] == 0:
                 imgs[f"{x}_{y}"] = white_box
             else:
                 imgs[f"{x}_{y}"] = image.crop((x*64, y*64, x*64+64, y*64+64))
