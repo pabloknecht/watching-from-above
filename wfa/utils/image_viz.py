@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import pandas as pd
 import numpy as np
-
+from wfa.utils.get_new_images import stitch_tiles
 
 def plot_image_categories(img, classes):
     '''
-    Plot the images with the quadrants and correspondent classes
+    Plot the image with the quadrants and correspondent classes
     '''
     xs = range(64, img.height, 64)
     xt = range(20, img.height, 64)
@@ -15,29 +15,28 @@ def plot_image_categories(img, classes):
     # multiple lines all full height
     plt.vlines(x=xs, ymin=0, ymax=img.height-1, colors='red', ls='-', lw=0.5)
     plt.hlines(y=xs, xmin=0, xmax=img.height-1, colors='red', ls='-', lw=0.5)
-    for item_x,value_x in enumerate(xt):
-        for item_y,value_y in enumerate(yt):
-            plt.text(value_x, value_y, classes[item_x, item_y], color = 'red')
+    for item_y,value_y in enumerate(yt):
+        for item_x,value_x in enumerate(xt):
+            plt.text(value_x, value_y, classes[item_y, item_x], color = 'red')
     plt.show()
 
 def plot_sub_images_categories(img, classes):
     '''
-    Plot the images with the quadrants and correspondent classes
+    Plot a grid of tiles contained in X_new (PIL) with its correspondent predicted classes
     '''
-
     quads = int(img.height/64)
     fig, axs = plt.subplots(quads, quads, figsize = (10, 10))
     for i in range(quads):
         for j in range(quads):
             img_quad = img.crop((i*64, j*64, i*64+64, j*64+64))
             axs[j, i].imshow(img_quad)
-            axs[j, i].text(22, 40, classes[i, j], color = 'red')
+            axs[j, i].text(22, 40, classes[j, i], color = 'red')
             axs[j, i].axis('off')
     plt.show()
 
 def plot_classified_images(X_new, y_pred_class):
     """
-    Plot a grid of tiles contained in X_new with its correspondent predicted classes
+    Plot a grid of tiles contained in X_new (np.array) with its correspondent predicted classes
     """
     size = int(X_new.shape[0] ** 0.5)
     X_reshaped = X_new.reshape((size,size,64,64,3))
@@ -45,13 +44,13 @@ def plot_classified_images(X_new, y_pred_class):
     for i in range(size) :
         for j in range(size) :
             axs[j, i].imshow(X_reshaped[i,j])
-            axs[j, i].text(22, 40, y_pred_class[i, j], color = 'red')
+            axs[j, i].text(22, 40, y_pred_class[j, i], color = 'red')
             axs[j, i].axis('off')
     plt.show()
 
 def summary(y_pred_class1:np.ndarray,
             y_pred_class2:np.ndarray):
-    if y_pred_class1.shape != cat_pred2.shape:
+    if y_pred_class1.shape != y_pred_class2.shape:
          print('Images have different shapes, please check!')
     else:
         changes = pd.DataFrame(y_pred_class1 - y_pred_class2).applymap(lambda x: 1 if x != 0 else 0).to_numpy()
@@ -80,3 +79,24 @@ def summary(y_pred_class1:np.ndarray,
         summary['year2'] = pd.Series(["{0:.0f}%".format(val * 100) for val in summary['year2']], index = summary.index)
         summary['diff'] = pd.Series(["{0:.0f}%".format(val * 100) for val in summary['diff']], index = summary.index)
         return changes, summary
+
+def landscape_changes(image, changes):
+    '''
+    This function receives an image (PIL) and the np.array with the category changes and return an image with white squares
+    where there was no change in the categories
+    '''
+    white_box = np.full((64,64,3), 255, dtype='uint8')
+    white_box = Image.fromarray(white_box)
+    imgs = {}
+
+    max_x = int(image.size[0]/64)
+
+    for x in range(max_x):
+        for y in range(max_x):
+            if changes[x,y] == 0:
+                imgs[f"{x}_{y}"] = white_box
+            else:
+                imgs[f"{x}_{y}"] = image.crop((x*64, y*64, x*64+64, y*64+64))
+
+    img = stitch_tiles(imgs, 0, 0, max_x, 64)
+    return img
