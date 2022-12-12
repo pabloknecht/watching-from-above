@@ -3,6 +3,7 @@ from PIL import Image
 import pandas as pd
 import numpy as np
 from wfa.utils.get_new_images import stitch_tiles
+from matplotlib import cm
 
 def plot_image_categories(img, classes):
     '''
