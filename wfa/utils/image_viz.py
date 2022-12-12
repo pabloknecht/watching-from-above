@@ -100,3 +100,45 @@ def landscape_changes(image, changes):
 
     img = stitch_tiles(imgs, 0, 0, max_x, 64)
     return img
+
+def image_colormap(y_pred):
+    '''
+    This function receives an np.array with the predicted classes and return a colored image with the classification of each quadrand
+    '''
+    # get the 10 colors from 'tab10' pallet of matplotlib
+    colors = np.array(cm.tab10.colors)
+    colors = colors*255
+    colors = colors.astype('uint8')
+
+    # converts into images
+    boxes = []
+    for i in range(10):
+        boxes.append(Image.fromarray(np.full((64,64,3), colors[i])))
+
+    size = y_pred.shape[0]
+    imgs = {}
+    for y in range(size):
+        for x in range(size):
+            imgs[f"{x}_{y}"] = boxes[y_pred[y,x]]
+
+    img = stitch_tiles(imgs, 0, 0, size, 64)
+    return img
+
+def image_colormap_changes(changes):
+    '''
+    This function receives an np.array with the changes and return a black & white image with the changes in each quadrand
+    '''
+    white_box = np.full((64,64,3), 255, dtype='uint8')
+    white_box = Image.fromarray(white_box)
+
+    black_box = np.full((64,64,3), 0, dtype='uint8')
+    black_box = Image.fromarray(black_box)
+
+    size = changes.shape[0]
+    imgs = {}
+    for y in range(size):
+        for x in range(size):
+            imgs[f"{x}_{y}"] = white_box if changes[y,x] == 0 else black_box
+
+    img = stitch_tiles(imgs, 0, 0, size, 64)
+    return img
