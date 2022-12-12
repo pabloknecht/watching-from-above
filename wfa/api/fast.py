@@ -43,7 +43,7 @@ def predict(address:str='Paris',
     cat_pred2 = np.ndarray.tolist(cat_pred2)
 
     #print(Fore.BLUE + f"\nLoad model {cat_pred2} stage from mlflow..." + Style.RESET_ALL)
-    return {'current_year':cat_pred1, 'historical_year':cat_pred2}
+    return {'year_1':cat_pred1, 'year_2':cat_pred2}
 
 @app.get("/reloadmodel")
 def root():
