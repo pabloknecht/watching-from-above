@@ -29,12 +29,13 @@ def save_model(model: Model = None,
         mlflow_tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
         mlflow_experiment  = os.environ.get("MLFLOW_EXPERIMENT")
         mlflow_model_name  = os.environ.get("MLFLOW_MODEL_NAME")
+        mlflow_run_name  = os.environ.get("MLFLOW_RUN_NAME")
 
         # configure mlflow
         mlflow.set_tracking_uri(mlflow_tracking_uri)
         mlflow.set_experiment(mlflow_experiment)
 
-        with mlflow.start_run():
+        with mlflow.start_run(run_name=mlflow_run_name):
 
             # STEP 1: push parameters to mlflow
             mlflow.log_params(params)
