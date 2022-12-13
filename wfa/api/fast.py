@@ -17,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-app.state.model=load_model('/home/pablo.knecht/code/pabloknecht/watching-from-above/models/Models_ResNet50')
+app.state.model=load_model('./models/Models_ResNet50')
 
 # http://127.0.0.1:8000/watchingfromabove/prediction?address=35%av%Joseph%Monier&year_of_interest=2020&historical_year=2018
 
@@ -47,7 +47,7 @@ def predict(address:str='Paris',
 
 @app.get("/reloadmodel")
 def root():
-    app.state.model=load_model('/home/pablo.knecht/code/pabloknecht/watching-from-above/models/Models_ResNet50')
+    app.state.model=load_model('./models/Models_ResNet50')
     return dict(greeting="Model reloaded")
 
 @app.get("/")
