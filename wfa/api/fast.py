@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from wfa.ml_logic.registry import load_model
+from tensorflow.keras.models import load_model
 from wfa.ml_logic import model
 from wfa.utils.get_new_images import get_new_image, split_tiles
+
 #from colorama import Fore, Style
 import numpy as np
 
@@ -17,7 +18,7 @@ app.add_middleware(
 )
 
 
-app.state.model=load_model()
+app.state.model=load_model('./models/Models_ResNet50')
 
 # http://127.0.0.1:8000/watchingfromabove/prediction?address=35%av%Joseph%Monier&year_of_interest=2020&historical_year=2018
 
@@ -47,7 +48,7 @@ def predict(address:str='Paris',
 
 @app.get("/reloadmodel")
 def root():
-    app.state.model=load_model()
+    app.state.model=load_model('./models/Models_ResNet50')
     return dict(greeting="Model reloaded")
 
 @app.get("/")
