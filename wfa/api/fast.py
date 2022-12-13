@@ -22,9 +22,9 @@ app.state.model=load_model('./models/Models_ResNet50')
 # http://127.0.0.1:8000/watchingfromabove/prediction?address=35%av%Joseph%Monier&year_of_interest=2020&historical_year=2018
 
 @app.get('/watchingfromabove/prediction')
-def predict(address:str='Paris',
-            year_1:str='2020',
-            year_2:str='2019'):
+def predict(address:str='-24.319728, -50.447382',
+            year_1:str='2019',
+            year_2:str='2020'):
     """
     With the address provided by user, we are able to return the satellite
     image of current year, as well as the satellit image of historical year
