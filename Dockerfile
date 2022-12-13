@@ -1,6 +1,7 @@
 #FROM python:3.10-slim
 FROM tensorflow/tensorflow:2.11.0
 
+COPY models /models
 COPY wfa /wfa
 COPY requirements.txt /requirements.txt
 COPY setup.py /setup.py
