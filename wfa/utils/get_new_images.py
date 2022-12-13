@@ -114,10 +114,13 @@ def image_resize(meters_per_pixel, img):
 
 def image_crop(img):
     '''
-    Crops the image to adjust size multiple of 64 pixels
+    Crops the image to adjust size to 640 pixels
     '''
-    crop_pix = int(img.height / 64) * 64
-    return img.crop((0,0,crop_pix,crop_pix))
+    # crop_pix = int(img.height / 64) * 64
+    # return img.crop((0,0,crop_pix,crop_pix))
+    crop_start = int((img.height-640)/2)
+    crop_end = crop_start + 640
+    return img.crop((crop_start, crop_start, crop_end, crop_end))
 
 def get_google_image(lat:float, lon:float):
     """
