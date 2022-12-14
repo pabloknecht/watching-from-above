@@ -1,6 +1,8 @@
 import requests
 import os
 from PIL import Image
+from PIL import ImageFilter
+from PIL import ImageEnhance
 import math
 import matplotlib.pyplot as plt
 import numpy as np
@@ -274,7 +276,7 @@ def get_new_image(adr:str, year:str) -> Image:
     if year == 'Google':
         return get_google_image(lat, lon)
     else:
-        return get_s2maps_data(lat, lon, year)
+        return apply_filter(get_s2maps_data(lat, lon, year), year)
 
 def split_tiles(img : Image) -> np.array:
     """
@@ -289,3 +291,42 @@ def split_tiles(img : Image) -> np.array:
             temp_tile = np.array(img.crop((i*64, j*64, i*64+64, j*64+64)))
             tiles.append(temp_tile)
     return np.array(tiles)
+
+
+
+def apply_filter(img, year) :
+    if str(year)=='2018' :
+        color_factor = 1
+        constrast_factor = 1.1
+        brightness_factor = 0.7
+        sharpness_factor = 1
+
+        # Color
+        img = ImageEnhance.Color(img)
+        img = img.enhance(color_factor)
+        # Contrast
+        img = ImageEnhance.Contrast(img)
+        img = img.enhance(constrast_factor)
+
+        # Brightness
+        img = ImageEnhance.Brightness(img)
+        img = img.enhance(brightness_factor)
+
+        # Sharpness
+        img = ImageEnhance.Sharpness(img)
+        img = img.enhance(sharpness_factor)
+
+        # Split into 3 channels
+        r, g, b = img.split()
+        # Increase colors
+        r = r.point(lambda i: i * 1.1)
+        g = g.point(lambda i: i * 1.1)
+        b = b.point(lambda i: i * 1.1)
+        # Recombine back to RGB image
+        img = Image.merge('RGB', (r, g, b))
+
+
+    img = img.filter(ImageFilter.Kernel((3, 3),
+      (-1, -1, -1, -1, 11, -1, -1, -1, -1), None, 0))
+
+    return img
