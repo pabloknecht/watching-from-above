@@ -1,11 +1,13 @@
 #import librairies
 import tensorflow as tf
+from tensorflow.keras.applications.resnet50 import ResNet50
+from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D , Flatten
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras import Sequential, layers
 from tensorflow.keras import optimizers
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.layers.experimental.preprocessing import Rescaling
 from tensorflow.keras import models
+from sklearn.model_selection import train_test_split
 
 from tqdm import tqdm # to observ the progression
 import numpy as np
@@ -44,45 +46,23 @@ def load_data(data_path:str):
     y = to_categorical(labels, num_classes)
     return X,y
 
-
-def shuffle_data(X,y, seed=None):
-    '''
-    Shuffle the X and y datas
-    if seed is used, it will fix the random
-    '''
-    if seed != None :
-        np.random.seed(seed)
-    p = np.random.permutation(len(X))
-    X, y = X[p], y[p]
-    return X, y
-
-def data_split(X,y,val_perc, test_perc):
-    '''
-    split of the data (test, val, train)
-    '''
-    first_split = int(len(X) * test_perc)
-    second_split = first_split + int(len(X) * val_perc)
-    X_test, X_val, X_train = X[:first_split], X[first_split:second_split], X[second_split:]
-    y_test, y_val, y_train = y[:first_split], y[first_split:second_split], y[second_split:]
+def split_shuffle_data(X,y, test_perc, val_perc, seed=None) :
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_perc, random_state=42)           # split Train and Test
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_perc, random_state=42) # split Train and val
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-def create_basic_model():
+def create_ResNet50_model():
+
+    model_ResNet50 = ResNet50(weights="imagenet", include_top=False, input_shape=(X_train[0].shape))
+
+    # Set the first layers to be trainable/untrainable
+    model_ResNet50.trainable = True
 
     model = Sequential()
-    model.add(Rescaling(1./255, input_shape=(64,64,3)))
-
-    model.add(layers.Conv2D(16, kernel_size=(3,3), padding='same', activation='relu'))
-    model.add(layers.MaxPooling2D(pool_size=(3,3)))
-
-    model.add(layers.Conv2D(32, kernel_size=(2,2), padding='same', activation="relu"))
-    model.add(layers.MaxPooling2D(pool_size=(2,2)))
-
-    #model.add(layers.Conv2D(64, kernel_size=(2,2), padding='same', activation="relu"))
-    #model.add(layers.MaxPooling2D(pool_size=(2,2)))
-
+    model.add(model_ResNet50)
     model.add(layers.Flatten())
-    model.add(layers.Dense(50, activation='relu'))
+    model.add(layers.Dense(49, activation='relu'))
     model.add(layers.Dense(10, activation='softmax'))
 
     opt = optimizers.Adam(learning_rate=1e-4)
@@ -92,21 +72,28 @@ def create_basic_model():
 
     return model
 
+def convert_to_tensor(X_train,X_val,X_test):
+    #Convert array to tensor (speed conversion)
+    X_train_tensor = tf.convert_to_tensor(X_train)
+    X_val_tensor = tf.convert_to_tensor(X_val)
+    X_test_tensor = tf.convert_to_tensor(X_test)
+    return X_train_tensor, X_val_tensor, X_test_tensor
 
+def fit_model(model_ResNet50, X_train_tensor, y_train, X_val_tensor,y_val):
 
-def fit_model(model, X_train, y_train,X_val, y_val,epochs=100):
-    es = EarlyStopping(monitor = 'val_accuracy',
-                    patience = 5,
-                    restore_best_weights = True,
-                    verbose = 1,
-                    )
+  es = EarlyStopping(monitor = 'val_accuracy',
+                   mode = 'max',
+                   patience = 5,
+                   verbose = 1,
+                   restore_best_weights = True)
 
-    history = model.fit(X_train, y_train,
-                                validation_data = (X_val, y_val),
-                                batch_size = 32,
-                                epochs=epochs,
+  history = model_ResNet50.fit(
+                                X_train_tensor, y_train,
+                                validation_data = (X_val_tensor,y_val),
+                                epochs=100,
+                                batch_size=32,
                                 callbacks=[es])
-    return history
+  return history
 
 
 
@@ -151,6 +138,7 @@ def predict_new_images(loaded_model, X_new):
     y_pred_class = np.argmax(y_new, axis = 1)
     return y_pred_class.reshape((size, size))
 
+
 # def get_new_images(new_images_path):
 #     imgs = []
 #     images_path = sorted(os.listdir(new_images_path))
@@ -176,16 +164,15 @@ def predict_new_images(loaded_model, X_new):
 # def main() :
 #     data_path = '../raw_data/EuroSAT'
 #     X, y = load_data(data_path)
-#     X, y = shuffle_data(X,y, 0)
-#     X_train, X_val, X_test, y_train, y_val, y_test = data_split(X,y,0.1,0.1)
-#     model_basic = create_basic_model()
-#     history = fit_model(model_basic, X_train, y_train,X_val, y_val,epochs=2)
+#     X_train, X_val, X_test, y_train, y_val, y_test = split_shuffle_data(X,y,0.2,0.1)
+#     model_ResNet50 = create_ResNet50_model()
+#     history = fit_model(model_ResNet50, X_train_tensor, y_train, X_val_tensor,y_val)
 #     plot_loss_accuracy(history)
-#     evaluation = model_basic.evaluate(X_test, y_test)
+#     evaluation = model_ResNet50.evaluate(X_test_tensor, y_test)
 #     test_accuracy = evaluation[-1]
 #     print(f"test_accuracy = {round(test_accuracy,2)*100} %")
-#     model_path = '../models/my_model'
-#     models.save_model(model_basic, model_path)
+#     model_path = '../models'
+#     models.save_model(model_ResNet50, model_path)
 
 
 #     loaded_model = load_model(model_path)
